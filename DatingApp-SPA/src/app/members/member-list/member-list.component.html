@@ -1,0 +1,9 @@
+<div class="container mt-5">
+  <div class="row">
+    <div *ngFor="let user of users" class="col-lg-2 col-md-3 col-sm-6"> <!--There 12 Grids in Bootstrap-->
+      <!--lg for large, md medium screen, sm for small screen. The number represents how many grids an element takes up-->
+       <app-member-card [user]="user"></app-member-card>
+    </div>
+  </div>
+ </div>
+

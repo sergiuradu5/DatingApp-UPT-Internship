@@ -1,9 +1,8 @@
-
 using System;
 
-namespace DatingApp.API.Models
+namespace DatingApp.API.DTO
 {
-    public class Photo
+    public class PhotoForReturnDTO
     {
         public int Id { get; set; }
         public string Url { get; set; }
@@ -11,8 +10,6 @@ namespace DatingApp.API.Models
         public DateTime DateAdded { get; set; }
         public bool IsMain { get; set; }
         public string PublicId { get; set; }
-        /* The Following 2 lines are used in order to get a CASCADE DELETE */
-        public User User { get; set; }
-        public int UserId { get; set; }
+ 
     }
 }

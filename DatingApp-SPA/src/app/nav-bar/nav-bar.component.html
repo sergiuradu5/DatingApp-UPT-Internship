@@ -17,12 +17,16 @@
 
 <!-- Dropdown Menu-->
     <div *ngIf="loggedIn()" class="dropdown" dropdown>
+      <span>
+        <img src="{{photoUrl}}" class="mr-2" alt="">
+      </span>
       <a class="dropdown-toggle text-light" dropdownToggle aria-controls="dropdown-animated">
         Welcome {{this.authService.decodedToken?.unique_name | titlecase}}!
       </a>
     
+    
       <div class="dropdown-menu mt-3" *dropdownMenu role="menu" aria-labelledby="button-animated">
-        <a class="dropdown-item" href="#"><i class="fa fa-user"> </i> Edit Profile</a>
+        <a class="dropdown-item" [routerLink]="['/member/edit']"  ><i class="fa fa-user"> </i> Edit Profile</a>
         <div class="dropdown-divicer"> </div>
         <a class="dropdown-item"  (click)="logout()"> <i class="fa fa-sign-out" > </i> Logout</a>
       </div>
