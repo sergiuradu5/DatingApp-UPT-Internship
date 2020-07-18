@@ -34,12 +34,14 @@ namespace DatingApp.API.Controllers
             if (await _repo.UserExists(userForRegisterDTO.Username))
                 return BadRequest("Username already exists");
 
-            var userToCreate = new User 
-            {
-                Username = userForRegisterDTO.Username
-            };
+            var userToCreate = _mapper.Map<User>(userForRegisterDTO);
             var createdUser = await _repo.Register(userToCreate, userForRegisterDTO.Password);
-            return StatusCode(201);
+            var userToReturn = _mapper.Map<UserForDetailedDTO>(createdUser);
+            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id}, userToReturn );
+            /* CreatedAtRoute returns an "address" where we could find the newly created object in the future */
+            
+            /* "GetUser" is the name of the HTTPGET request, the next is the controller that contains that methon,
+                and the last is the object in itself, but we do not want to send the user with the password all together */
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDTO userforLoginDTO)

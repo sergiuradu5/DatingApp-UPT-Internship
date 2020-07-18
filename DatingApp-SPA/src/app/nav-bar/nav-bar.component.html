@@ -18,7 +18,7 @@
 <!-- Dropdown Menu-->
     <div *ngIf="loggedIn()" class="dropdown" dropdown>
       <span>
-        <img src="{{photoUrl}}" class="mr-2" alt="">
+        <img src="{{photoUrl || '../../../../assets/user.png'}}" class="mr-2" alt="">
       </span>
       <a class="dropdown-toggle text-light" dropdownToggle aria-controls="dropdown-animated">
         Welcome {{this.authService.decodedToken?.unique_name | titlecase}}!

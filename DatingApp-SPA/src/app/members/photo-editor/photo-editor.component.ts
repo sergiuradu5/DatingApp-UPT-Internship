@@ -54,6 +54,11 @@ initializeUploader() {
         isMain: res.isMain
       };
       this.photos.push(photo);
+      if(photo.isMain) { //The Methods below are used to update the main photo in the SPA
+        this.authService.changeMemberPhoto(photo.url);
+        this.authService.currentUser.photoUrl = photo.url;
+        localStorage.setItem('user', JSON.stringify(this.authService.currentUser));
+      }
     }
   }
 }
