@@ -20,9 +20,11 @@ import { MemberDetailComponent } from './members/member-detail/member-detail.com
 import { MemberDetailResolver } from './_resolver/member-detail.resolver';
 import { MemberListResolver } from './_resolver/member-list.resolver';
 
+
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import { NgxGalleryModule } from 'ngx-gallery-9';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
@@ -30,6 +32,9 @@ import { MemberEditResolver } from './_resolver/member-edit.resolver';
 import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes.guard';
 import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
 import { FileUploadModule } from 'ng2-file-upload';
+import { TimeAgoExtendsPipe } from './_helpers/time-ago-extends.pipe';
+
+
 
 
 
@@ -51,7 +56,8 @@ export function tokenGetter() {
       MemberCardComponent,
       MemberDetailComponent,
       MemberEditComponent,
-      PhotoEditorComponent
+      PhotoEditorComponent,
+      TimeAgoExtendsPipe
    ],
    imports: [
       BrowserModule,
@@ -59,6 +65,7 @@ export function tokenGetter() {
       FormsModule,
       BrowserAnimationsModule,
       NgxGalleryModule,
+      BsDatepickerModule.forRoot(),
       BsDropdownModule.forRoot(),
       TabsModule.forRoot(),
       RouterModule.forRoot(appRoutes),
@@ -79,7 +86,6 @@ export function tokenGetter() {
       MemberListResolver,
       MemberEditResolver,
       PreventUnsavedChanges
-
    ],
    bootstrap: [
       AppComponent

@@ -4,6 +4,7 @@ import { AlertifyService } from '../_services/alertify.service';
 import { FormGroup, FormControl, Validators, FormBuilder} from '@angular/forms';
 import { User } from '../_models/user';
 import { Router } from '@angular/router';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-register',
@@ -13,6 +14,7 @@ import { Router } from '@angular/router';
 export class RegisterComponent implements OnInit {
 user: User;
 registerForm: FormGroup;
+bsConfig: Partial<BsDatepickerConfig>; //Partial class makes all of the properties of the class OPTIONAL
 @Output() cancelRegister = new EventEmitter();
   constructor(private authService: AuthService,
               private alertify: AlertifyService,
@@ -21,7 +23,9 @@ registerForm: FormGroup;
     ) { }
 
   ngOnInit() {
-
+    this.bsConfig = {
+      containerClass: 'theme-red'
+    };
     this.createRegisterForm();
     // this.registerForm = new FormGroup({ //This Here is How to declare a REACTIVE FORM
     //   username: new FormControl('', Validators.required),

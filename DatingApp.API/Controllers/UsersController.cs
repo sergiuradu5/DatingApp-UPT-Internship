@@ -6,9 +6,11 @@ using DatingApp.API.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using DatingApp.API.Helpers;
 using System;
 
 namespace DatingApp.API.Controllers {
+    [ServiceFilter(typeof(LogUserActivity))]
     [Authorize]
     [Route ("api/[controller]")]
     [ApiController]
