@@ -35,6 +35,7 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { TimeAgoExtendsPipe } from './_helpers/time-ago-extends.pipe';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { MatchesResolver } from './_resolver/matches.resolver';
 
 
 
@@ -89,7 +90,8 @@ export function tokenGetter() {
       MemberDetailResolver,
       MemberListResolver,
       MemberEditResolver,
-      PreventUnsavedChanges
+      PreventUnsavedChanges,
+      MatchesResolver
    ],
    bootstrap: [
       AppComponent

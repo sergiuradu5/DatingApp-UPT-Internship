@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using DatingApp.API.Helpers;
 using System;
+using DatingApp.API.Models;
 
 namespace DatingApp.API.Controllers {
     [ServiceFilter(typeof(LogUserActivity))]
@@ -71,6 +72,35 @@ namespace DatingApp.API.Controllers {
 
             throw new Exception($"Updating user {id} failed on save");
         }
+
+        [HttpPost("{id}/like/{recipientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            return Unauthorized();
+
+            var like = await _repo.GetLike(id, recipientId);
+
+            if (like != null)
+                return BadRequest("You already like this user");
+
+            if (await _repo.GetUser(recipientId) == null)
+                return NotFound();
+
+            like = new Like     //If the like doesn't exist already, this part creates a new like
+            {
+                LikerId = id,
+                LikeeId = recipientId
+
+            };
+            _repo.Add<Like>(like); //Adding the newly created like to our repo
+
+            if (await _repo.SaveAll())
+                return Ok();
+            
+            return BadRequest( "Failed to like user");
+        }
+
 
     }
 }
