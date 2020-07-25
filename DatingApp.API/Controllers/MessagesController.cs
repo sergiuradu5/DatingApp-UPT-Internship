@@ -42,6 +42,19 @@ namespace DatingApp.API.Controllers
             return Ok(messageFromRepo);
         }
 
+        [HttpGet("thread/{recipientId}")]
+        public async Task<IActionResult> CreateMessage(int userId, int recipientId)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            return Unauthorized();
+
+            var messagesFromRepo = await _repo.GetMessageThread(userId, recipientId);
+
+            var messageThread = _mapper.Map<IEnumerable<MessageToReturnDTO>>(messagesFromRepo);
+
+            return Ok(messageThread);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetMessages(int userId, [FromQuery]MessageParams messageParams)
         {
@@ -63,7 +76,10 @@ namespace DatingApp.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateMessage(int userId, MessageForCreationDTO messageForCreationDTO)
         {
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            var sender = await _repo.GetUser(userId); /*We do not need to load the sender
+            .. but we do it because onece it's loaded it's in the memory...
+            .. so AutoMapper does its magic and actually maps it correctnly from Message to MessageToReturnDTO*/
+            if (sender.Id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                  return Unauthorized(); //This method is checking if the ID of the user requesting this HttpPost is
                                         //..is the same as userId (if they are different that means that somebody can pose / send messages as different users)
             
@@ -80,12 +96,40 @@ namespace DatingApp.API.Controllers
 
         _repo.Add(message);
 
-        var messageToReturn = _mapper.Map<MessageForCreationDTO>(message);
+        
         if (await _repo.SaveAll())
+        {
+            var messageToReturn = _mapper.Map<MessageToReturnDTO>(message);
             return CreatedAtRoute("GetMessage", new {id = message.Id}, messageToReturn);
+        }
         
         throw new Exception("Creating the message failed on save");
 
         }
+
+        [HttpPost("{id}")] //Message Id
+        public async Task<IActionResult> DeleteMessage (int id, int userId)
+        {
+             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                 return Unauthorized();
+
+            var messageFromRepo = await _repo.GetMessage(id);
+
+            if(messageFromRepo.SenderId == userId)
+            messageFromRepo.SenderDeleted = true;
+
+            if(messageFromRepo.RecipientId == userId)
+            messageFromRepo.RecipientDeleted = true;
+            
+            if (messageFromRepo.SenderDeleted && messageFromRepo.RecipientDeleted)
+                _repo.Delete(messageFromRepo);
+
+            if (await _repo.SaveAll())
+                return NoContent();
+
+            throw new Exception("Error deleting the message");
+        }
+
+        
     }
 }

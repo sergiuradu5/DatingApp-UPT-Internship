@@ -36,6 +36,8 @@ import { TimeAgoExtendsPipe } from './_helpers/time-ago-extends.pipe';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { MatchesResolver } from './_resolver/matches.resolver';
+import { MessagesResolver } from './_resolver/messages.resolver';
+import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
 
 
 
@@ -60,7 +62,8 @@ export function tokenGetter() {
       MemberDetailComponent,
       MemberEditComponent,
       PhotoEditorComponent,
-      TimeAgoExtendsPipe
+      TimeAgoExtendsPipe,
+      MemberMessagesComponent
    ],
    imports: [
       BrowserModule,
@@ -91,7 +94,8 @@ export function tokenGetter() {
       MemberListResolver,
       MemberEditResolver,
       PreventUnsavedChanges,
-      MatchesResolver
+      MatchesResolver,
+      MessagesResolver
    ],
    bootstrap: [
       AppComponent

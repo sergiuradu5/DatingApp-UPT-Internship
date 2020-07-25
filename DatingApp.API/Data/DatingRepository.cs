@@ -128,13 +128,16 @@ namespace DatingApp.API.Data {
             switch (messageParams.MessageContainer)
             {
                 case "Inbox":
-                    messages = messages.Where(u => u.RecipientId == messageParams.UserId);
+                    messages = messages.Where(u => u.RecipientId == messageParams.UserId 
+                        && u.RecipientDeleted == false);
                     break;
                 case "Outbox":
-                    messages = messages.Where(u => u.SenderId == messageParams.UserId);
+                    messages = messages.Where(u => u.SenderId == messageParams.UserId
+                        && u.SenderDeleted == false);
                     break;
                 default:
-                    messages = messages.Where(u=>u.RecipientId == messageParams.UserId && u.IsRead==false);
+                    messages = messages.Where(u=>u.RecipientId == messageParams.UserId 
+                        && u.RecipientDeleted == false && u.IsRead==false);
                     break;
             }
             messages = messages.OrderByDescending(d => d.MessageSent);
@@ -143,9 +146,17 @@ namespace DatingApp.API.Data {
             .CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
         }
 
-        public Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
         {
-            throw new NotImplementedException();
+            var messages = await _context.Messages
+                .Include(u=> u.Sender).ThenInclude(p=>p.Photos)
+                .Include(u=> u.Recipient).ThenInclude(p=> p.Photos)
+                .Where(m => m.RecipientId == userId && m.RecipientDeleted == false && m.SenderId == recipientId 
+                || m.RecipientId == recipientId && m.SenderDeleted == false && m.SenderId == userId)
+                .OrderByDescending(m => m.MessageSent)
+                .ToListAsync();
+
+                return messages;
         }
     }
 }
