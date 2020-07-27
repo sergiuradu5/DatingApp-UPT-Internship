@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 namespace DatingApp.API.Controllers {
-    [Authorize]
+    //[Authorize]
     [Microsoft.AspNetCore.Mvc.Route("api/users/{userId}/photos")]
     public class PhotosController : ControllerBase {
         private readonly IDatingRepository _repo;

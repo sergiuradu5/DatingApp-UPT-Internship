@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DatingApp.API.Controllers
 {
-    [Authorize]
+  //  [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ValuesController : ControllerBase
