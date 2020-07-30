@@ -13,6 +13,9 @@
       <li class="nav-item" routerLinkActive="router-link-active">
         <a class="nav-link" [routerLink]="['/messages']"    tabindex="-1" >Messages</a>
       </li>
+      <li *appHasRole="['Admin', 'Moderator']" class="nav-item" routerLinkActive="router-link-active">
+        <a class="nav-link" [routerLink]="['/admin']" >Admin</a>
+      </li>
     </ul>
 
 <!-- Dropdown Menu-->

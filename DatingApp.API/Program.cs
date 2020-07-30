@@ -24,8 +24,9 @@ namespace DatingApp.API
                         and it can also create a database if there isn't any */
                     var context = services.GetRequiredService<DataContext>();
                     var userManager = services.GetRequiredService<UserManager<User>>();
+                    var roleManager = services.GetRequiredService<RoleManager<Role>>();
                     context.Database.Migrate();
-                    Seed.SeedUser(userManager);
+                    Seed.SeedUser(userManager, roleManager);
                 }
                 catch (Exception ex)
                 {

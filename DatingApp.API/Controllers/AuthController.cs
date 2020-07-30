@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -9,6 +10,7 @@ using DatingApp.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,18 +21,15 @@ namespace DatingApp.API.Controllers
     [AllowAnonymous]
     public class AuthController: ControllerBase
     {
-        private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper,
+        public AuthController(IConfiguration config, IMapper mapper,
          UserManager<User> userManager, SignInManager<User> signInManager)
         {
             
-
-            _repo =repo;
             _config=config;
             _mapper = mapper;
             _userManager = userManager;
@@ -40,14 +39,18 @@ namespace DatingApp.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register (UserForRegisterDTO userForRegisterDTO)
         {
-            userForRegisterDTO.Username = userForRegisterDTO.Username.ToLower();
-            if (await _repo.UserExists(userForRegisterDTO.Username))
-                return BadRequest("Username already exists");
-
+         
             var userToCreate = _mapper.Map<User>(userForRegisterDTO);
-            var createdUser = await _repo.Register(userToCreate, userForRegisterDTO.Password);
-            var userToReturn = _mapper.Map<UserForDetailedDTO>(createdUser);
-            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id}, userToReturn );
+            var result = await _userManager.CreateAsync(userToCreate, userForRegisterDTO.Password);
+            var userToReturn = _mapper.Map<UserForDetailedDTO>(userToCreate);
+
+            if(result.Succeeded)
+            {
+                  return CreatedAtRoute("GetUser", new { controller = "Users", id = userToCreate.Id}, userToReturn );
+            }
+            return BadRequest(result.Errors);
+
+          
             /* CreatedAtRoute returns an "address" where we could find the newly created object in the future */
             
             /* "GetUser" is the name of the HTTPGET request, the next is the controller that contains that methon,
@@ -66,23 +69,32 @@ namespace DatingApp.API.Controllers
            
             if (result.Succeeded)
             {
-                 var appUser =  _mapper.Map<UserForListDTO>(user);
+                 var appUser = await _userManager.Users.Include(p => p.Photos)
+                    .FirstOrDefaultAsync(u => u.NormalizedUserName == userForLoginDTO.Username.ToUpper());
+                    var userToReturn = _mapper.Map<UserForListDTO>(appUser);
                  return Ok(new {
-                token= GenerateJwtToken(user),
-                user = appUser
+                token= GenerateJwtToken(appUser).Result,
+                user = userToReturn
             });
             }
             return Unauthorized();
         }
 
-        private string GenerateJwtToken(User user)
+        private async Task<string> GenerateJwtToken(User user)
         {
-             var claims = new[]
+             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName)
 
             };
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            foreach(var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8
             .GetBytes(_config.GetSection("AppSettings:Token").Value));

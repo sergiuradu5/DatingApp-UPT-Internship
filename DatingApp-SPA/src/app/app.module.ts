@@ -19,7 +19,8 @@ import { MemberCardComponent } from './members/member-card/member-card.component
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 import { MemberDetailResolver } from './_resolver/member-detail.resolver';
 import { MemberListResolver } from './_resolver/member-list.resolver';
-
+import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
+import { HasRoleDirective } from './directives/has-role.directive';
 
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -38,6 +39,13 @@ import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { MatchesResolver } from './_resolver/matches.resolver';
 import { MessagesResolver } from './_resolver/messages.resolver';
 import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
+import { UserManagementComponent } from './admin/user-management/user-management.component';
+import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
+import { AdminService } from './_services/admin.service';
+import { RolesModalComponent } from './admin/roles-modal/roles-modal.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
+
+
 
 
 
@@ -63,7 +71,12 @@ export function tokenGetter() {
       MemberEditComponent,
       PhotoEditorComponent,
       TimeAgoExtendsPipe,
-      MemberMessagesComponent
+      MemberMessagesComponent,
+      AdminPanelComponent,
+      HasRoleDirective,
+      UserManagementComponent,
+      PhotoManagementComponent,
+      RolesModalComponent
    ],
    imports: [
       BrowserModule,
@@ -71,6 +84,7 @@ export function tokenGetter() {
       FormsModule,
       BrowserAnimationsModule,
       NgxGalleryModule,
+      ModalModule.forRoot(),
       ButtonsModule.forRoot(),
       PaginationModule.forRoot(),
       BsDatepickerModule.forRoot(),
@@ -95,7 +109,11 @@ export function tokenGetter() {
       MemberEditResolver,
       PreventUnsavedChanges,
       MatchesResolver,
-      MessagesResolver
+      MessagesResolver,
+      AdminService
+   ],
+   entryComponents: [
+      RolesModalComponent
    ],
    bootstrap: [
       AppComponent
