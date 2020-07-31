@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
   ) {}
   canActivate(next: ActivatedRouteSnapshot): boolean {
     const roles = next.firstChild.data['roles'] as Array<string>; //Checking if there are variables (data) in the data of the route
-    if (roles) { //When somebody accesses '/admin' they will receive a an awway of strings 'Admin' & "Moderator"
+    if (roles && this.authService.loggedIn()) { //When somebody accesses '/admin' they will receive a an awway of strings 'Admin' & "Moderator"
       const match = this.authService.roleMatch(roles); //and will check if he roles inside the token match these two
       if (match) {
         return true;
@@ -23,6 +23,8 @@ export class AuthGuard implements CanActivate {
         this.alertify.error('You are not authorised to acces this area');
       }
     }
+    
+
     if (this.authService.loggedIn())
     return true;
 
