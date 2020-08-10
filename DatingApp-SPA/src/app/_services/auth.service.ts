@@ -14,8 +14,8 @@ export class AuthService {
   decodedToken: any;
   currentUser: User;
   photoUrl = new BehaviorSubject<string>('../../assets/user.png'); //For ANY to ANY Comunication 
-  currentPhotoUrl = this.photoUrl.asObservable();   
-
+  currentPhotoUrl = this.photoUrl.asObservable();
+  
   constructor(private http: HttpClient) { }
 
   changeMemberPhoto(photoUrl: string) {
@@ -58,6 +58,11 @@ export class AuthService {
       }
     });
     return isMatch;
+  }
+
+  getRoles() : Array<string>{
+    const userRoles = this.decodedToken.role as Array<string>;
+    return userRoles;
   }
 
 }

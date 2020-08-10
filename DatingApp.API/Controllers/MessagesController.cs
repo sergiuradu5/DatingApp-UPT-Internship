@@ -76,7 +76,7 @@ namespace DatingApp.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateMessage(int userId, MessageForCreationDTO messageForCreationDTO)
         {
-            var sender = await _repo.GetUser(userId); /*We do not need to load the sender
+            var sender = await _repo.GetOwnUser(userId); /*We do not need to load the sender
             .. but we do it because onece it's loaded it's in the memory...
             .. so AutoMapper does its magic and actually maps it correctnly from Message to MessageToReturnDTO*/
             if (sender.Id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
@@ -85,7 +85,7 @@ namespace DatingApp.API.Controllers
             
             messageForCreationDTO.SenderId = userId;
 
-            var recipient = await _repo.GetUser(messageForCreationDTO.RecipientId);
+            var recipient = await _repo.GetOtherUser(messageForCreationDTO.RecipientId);
 
             if(recipient == null)
                 return BadRequest("Could not find user");

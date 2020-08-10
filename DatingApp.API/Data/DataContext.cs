@@ -25,6 +25,9 @@ namespace DatingApp.API.Data
         /*Likes table and Messages table is more of a Look up table with One To Many Relationship*/
             base.OnModelCreating(builder);
 
+            /*Adding a Global Query Filter and will remove it when not needed */
+            builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved == true);
+
             builder.Entity<UserRole>(userRole => 
             {
                 userRole.HasKey(ur => new {ur.UserId, ur.RoleId});

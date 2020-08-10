@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DatingApp.API.Helpers;
 using DatingApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DatingApp.API.Data {
+namespace DatingApp.API.Data
+{
     public class DatingRepository : IDatingRepository {
         private readonly DataContext _context;
         private readonly DataContext context;
@@ -31,17 +33,47 @@ namespace DatingApp.API.Data {
 
         public async Task<Photo> GetMainPhotoForUser(int userId)
         {
-            return await _context.Photos.Where(u => u.UserId == userId).FirstOrDefaultAsync(p => p.IsMain);
+            return await _context.Photos.Where(u => u.UserId == userId).IgnoreQueryFilters()
+            .FirstOrDefaultAsync(p => p.IsMain);
         }
 
         public async Task<Photo> GetPhoto(int id)
         {
-            var photo = await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+            var photo = await _context.Photos.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == id);
             return photo;
         }
 
-        public async Task<User> GetUser (int id) {
-           var user = await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
+        public async Task<PagedList<Photo>> GetPhotosForModeration(PhotosForModerationParams photosParams)
+        {
+             var photos = _context.Photos.IgnoreQueryFilters().Where(p => p.IsApproved == false).OrderBy(p => p.DateAdded).AsQueryable();
+
+            if(!string.IsNullOrEmpty(photosParams.OrderBy))
+            {
+                switch (photosParams.OrderBy)
+                {
+                    case "newest":
+                    photos = photos.OrderByDescending(p=> p.DateAdded);
+                    break;
+                    default:
+                    photos = photos.OrderBy(p => p.DateAdded);
+                    break;
+                }
+            }
+            
+            return await PagedList<Photo>.CreateAsync(photos, photosParams.PageNumber, 
+            photosParams.PageSize);
+        }
+
+        //This method is used to retreive User Data when A User edits his own profile (displaying non-approved photos)
+        public async Task<User> GetOwnUser (int id) {
+           var user = await _context.Users.Include(p => p.Photos).IgnoreQueryFilters()
+            .FirstOrDefaultAsync(u => u.Id == id);
+           return user;
+        }
+        //Method used when retreiving data about other users (non-approved photos do not get displayed)
+         public async Task<User> GetOtherUser (int id) {
+           var user = await _context.Users.Include(p => p.Photos)
+            .FirstOrDefaultAsync(u => u.Id == id);
            return user;
         }
         /* This Method will be using paging -> instead of retreiving all the data at once
@@ -87,7 +119,8 @@ namespace DatingApp.API.Data {
                 }
             }
 
-            return await PagedList<User>.CreateAsync(users, usersParams.PageNumber, usersParams.PageSize);
+            return await PagedList<User>.CreateAsync(users, usersParams.PageNumber, 
+            usersParams.PageSize);
         }
 
         private async Task<IEnumerable<int>> GetUserLikes(int id, bool likers)

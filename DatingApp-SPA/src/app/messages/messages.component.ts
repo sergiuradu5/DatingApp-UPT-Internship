@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Message } from '../_models/message';
 import { Pagination, PaginatedResult } from '../_models/pagination';
 import { UserService } from '../_services/user.service';
 import { AuthService } from '../_services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { AlertifyService } from '../_services/alertify.service';
+import { Observable, from } from 'rxjs/';
+import {interval} from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-messages',
@@ -12,6 +15,7 @@ import { AlertifyService } from '../_services/alertify.service';
   styleUrls: ['./messages.component.css']
 })
 export class MessagesComponent implements OnInit {
+  @Input() messages$: Observable<PaginatedResult<Message[]>>;
   messages: Message[];
   pagination: Pagination;
   messageContainer = 'Unread';
@@ -24,12 +28,21 @@ export class MessagesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    /* Non Real Time messages
     this.route.data.subscribe(data => {
       this.messages = data['messages'].result;
       this.pagination = data['messages'].pagination;
       
-    });
+    }); */
+    this.messages$ = interval(1000).pipe(
+    startWith(0), switchMap( () => this.userService.getMessages(this.authService.decodedToken.nameid,
+      this.pagination.currentPage,
+      this.pagination.itemsPerPage, this.messageContainer)));
   }
+  //Real time messages
+  
+
+   // Non-real-time messages
   loadMessages() {
     this.userService.getMessages(this.authService.decodedToken.nameid,
       this.pagination.currentPage,
@@ -53,8 +66,7 @@ export class MessagesComponent implements OnInit {
         this.alertify.error(error);
       });
     });
-  }
-
+  } 
   pageChanged(event: any): void {
     this.pagination.currentPage = event.page;
     this.loadMessages();

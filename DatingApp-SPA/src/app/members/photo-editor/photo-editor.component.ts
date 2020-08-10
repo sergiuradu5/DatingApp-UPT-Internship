@@ -51,10 +51,11 @@ initializeUploader() {
         url: res.url,
         dateAdded: res.dateAdded,
         description: res.description,
-        isMain: res.isMain
+        isMain: res.isMain,
+        isApproved: res.isApproved
       };
       this.photos.push(photo);
-      if(photo.isMain) { //The Methods below are used to update the main photo in the SPA
+      if(photo.isMain && photo.isApproved) { //The Methods below are used to update the main photo in the SPA
         this.authService.changeMemberPhoto(photo.url);
         this.authService.currentUser.photoUrl = photo.url;
         localStorage.setItem('user', JSON.stringify(this.authService.currentUser));
@@ -66,7 +67,9 @@ initializeUploader() {
   setMainPhoto(photo: Photo) {
     this.userService.setMainPhoto(this.authService.decodedToken.nameid, photo.id).subscribe( () => {
      this.currentMain = this.photos.filter(p=>p.isMain === true)[0];
-     this.currentMain.isMain = false;
+     if(this.currentMain != null){
+       this.currentMain.isMain = false;
+     }
      photo.isMain=true;
       this.authService.changeMemberPhoto(photo.url);
       this.authService.currentUser.photoUrl = photo.url;
@@ -80,9 +83,15 @@ initializeUploader() {
 
   deletePhoto(id: number) {
     this.alertify.confirm('Are you sure you want to delete this photo?', () => {
+      var photoIsMain = this.photos.find(p => p.id == id).isMain;
       this.userService.deletePhoto(this.authService.decodedToken.nameid, id).subscribe( () => {
         this.photos.splice(this.photos.findIndex(p => p.id == id), 1);
         this.alertify.success('Photo has been deleted');
+        if(photoIsMain || this.photos.length == 0) {
+          this.authService.changeMemberPhoto('../../assets/user.png');
+          this.authService.currentUser.photoUrl = null;
+          localStorage.setItem('user', JSON.stringify(this.authService.currentUser));
+        }
         }, error => {
           this.alertify.error('Failed to delete photo');
         }

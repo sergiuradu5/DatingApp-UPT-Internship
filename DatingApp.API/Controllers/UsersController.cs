@@ -27,7 +27,7 @@ namespace DatingApp.API.Controllers {
         public async Task<IActionResult> GetUsers ([FromQuery]UsersParams usersParams) {
             
             var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var userFromRepo = await _repo.GetUser(currentUserId);
+            var userFromRepo = await _repo.GetOtherUser(currentUserId);
 
             usersParams.UserId = currentUserId;
             if(string.IsNullOrEmpty(usersParams.Gender))
@@ -53,7 +53,16 @@ namespace DatingApp.API.Controllers {
 
         [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser (int id) {
-            var user = await _repo.GetUser (id);
+            User user;
+            if (id == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                 user = await _repo.GetOwnUser(id);
+            }
+            else
+            {
+                user = await _repo.GetOtherUser(id);
+            }
+            
             var userToReturn = _mapper.Map<UserForDetailedDTO>(user);
             return Ok (userToReturn);
         }
@@ -64,7 +73,7 @@ namespace DatingApp.API.Controllers {
             if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             return Unauthorized();
 
-            var userFromRepo = await _repo.GetUser(id);
+            var userFromRepo = await _repo.GetOwnUser(id);
             _mapper.Map(userForUpdateDto, userFromRepo);
 
             if(await _repo.SaveAll())
@@ -84,7 +93,7 @@ namespace DatingApp.API.Controllers {
             if (like != null)
                 return BadRequest("You already like this user");
 
-            if (await _repo.GetUser(recipientId) == null)
+            if (await _repo.GetOtherUser(recipientId) == null)
                 return NotFound();
 
             like = new Like     //If the like doesn't exist already, this part creates a new like

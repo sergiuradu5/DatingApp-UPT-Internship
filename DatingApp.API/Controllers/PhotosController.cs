@@ -55,7 +55,7 @@ namespace DatingApp.API.Controllers {
  if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             return Unauthorized();
 
-            var userFromRepo = await _repo.GetUser(userId);
+            var userFromRepo = await _repo.GetOwnUser(userId);
 
             var file = photoForCreationDTO.File;
 
@@ -98,7 +98,7 @@ namespace DatingApp.API.Controllers {
              if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             return Unauthorized();
 
-            var user = await _repo.GetUser(userId);
+            var user = await _repo.GetOwnUser(userId);
 
             if(!user.Photos.Any(p => p.Id == id))
                 return Unauthorized();
@@ -106,11 +106,13 @@ namespace DatingApp.API.Controllers {
             var photoFromRepo = await _repo.GetPhoto(id);
 
             if (photoFromRepo.IsMain)
-                return BadRequest("This is already the main photo");
+                return BadRequest("This is already the main photo"); 
 
             var currentMainPhoto = await _repo.GetMainPhotoForUser(userId);
 
-            currentMainPhoto.IsMain = false;
+            if(currentMainPhoto != null){
+                currentMainPhoto.IsMain = false;
+            }
             photoFromRepo.IsMain = true;
             if (await _repo.SaveAll())
             return NoContent();
@@ -122,18 +124,15 @@ namespace DatingApp.API.Controllers {
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePhoto(int userId, int id)
         {
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
-            return Unauthorized();
-
-            var user = await _repo.GetUser(userId);
+            var user = await _repo.GetOwnUser(userId);
 
             if(!user.Photos.Any(p => p.Id == id))
                 return Unauthorized();
 
             var photoFromRepo = await _repo.GetPhoto(id);
 
-            if (photoFromRepo.IsMain)
-                return BadRequest("You cannot delete your main photo");
+            if(photoFromRepo.IsMain)
+                photoFromRepo.IsMain = false;
 
             if (photoFromRepo.PublicId != null)
             {
@@ -157,5 +156,35 @@ namespace DatingApp.API.Controllers {
 
             return BadRequest("Failed to delete the photo");
         }
+        [Authorize(Policy = "ModeratePhotoRole")]
+        [HttpDelete("moderator/{id}")]
+        public async Task<IActionResult> ModeratorDeletePhoto(int id)
+        {
+            var photoFromRepo = await _repo.GetPhoto(id);
+
+
+            if (photoFromRepo.PublicId != null)
+            {
+                var deleteParams = new DeletionParams(photoFromRepo.PublicId);
+
+                var result = _cloudinary.Destroy(deleteParams);
+
+               if (result.Result == "ok") {
+                _repo.Delete(photoFromRepo);
+                 }
+
+            }
+
+            if (photoFromRepo.PublicId == null) 
+            {
+                _repo.Delete(photoFromRepo);
+            }
+            
+            if (await _repo.SaveAll())
+                return Ok();
+
+            return BadRequest("Failed to delete the photo");
+        }
+        
     }
 }

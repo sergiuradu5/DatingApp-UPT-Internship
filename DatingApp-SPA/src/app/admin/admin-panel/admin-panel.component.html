@@ -1,19 +1,29 @@
 <div class="container mt-5">
 <h2>Admin Panel</h2>
 <div class="tab-panel">
-  <tabset class="member-tabset">
-    <div class="container">
-    <tab heading="User Management">
-      <app-user-management></app-user-management>
-    </tab>
-  </div>
-    <tab heading="Photo Management">
-      <app-photo-management></app-photo-management>
-    </tab>
-
+  <tabset class="member-tabset" #staticTabs>
     
+    <tab heading="User Management"
+    (click)="clickOnDisabledTab(0)"
+    [disabled]="!userIsAdmin(this.userRoles)">
+      <div class="container">
+        <app-user-management ></app-user-management>
+      </div>
+    </tab>
+  
+    
+    <tab heading="Photo Management"
+    (click)="clickOnDisabledTab(1)"
+    [disabled]="!userIsModerator(this.userRoles)">
+      <div class="container">
+        <app-photo-management  ></app-photo-management>
+      </div>
+    </tab>
+  
+
+  
   </tabset>
 </div>
-
+  
 
 </div>

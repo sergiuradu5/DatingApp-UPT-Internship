@@ -44,6 +44,7 @@ import { PhotoManagementComponent } from './admin/photo-management/photo-managem
 import { AdminService } from './_services/admin.service';
 import { RolesModalComponent } from './admin/roles-modal/roles-modal.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { PhotosForModerationResolver } from './_resolver/photos-for-moderation.resolver';
 
 
 
@@ -110,7 +111,8 @@ export function tokenGetter() {
       PreventUnsavedChanges,
       MatchesResolver,
       MessagesResolver,
-      AdminService
+      AdminService,
+      PhotosForModerationResolver
    ],
    entryComponents: [
       RolesModalComponent
