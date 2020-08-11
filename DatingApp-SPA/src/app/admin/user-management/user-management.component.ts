@@ -47,7 +47,7 @@ bsModalRef: BsModalRef;
       {
         this.adminService.updateUserRoles(user, rolesToUpdate).subscribe( () => {
           user.roles = [...rolesToUpdate.roleNames];
-          console.log(user.roles);
+  
         }, error => {
           this.alertify.error(error);
         });
@@ -82,7 +82,7 @@ bsModalRef: BsModalRef;
         roles.push(availableRoles[i]);
       }
     }
-    console.log(roles);
+  
     return roles;
     
   }

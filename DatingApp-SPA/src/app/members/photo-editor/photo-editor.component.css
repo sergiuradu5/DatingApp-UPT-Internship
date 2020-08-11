@@ -1,6 +1,6 @@
 img.img-thumbnail {
-    height: 100px;
-    width: 100px !important;
+    width: 100%;
+    height: auto;
     margin-bottom: 2px;
 }
 
@@ -14,4 +14,14 @@ img.img-transparent {
 
 input[type=file] {
     color: transparent;
+}
+
+.img-wrapper {
+    position: relative;
+}
+
+.img-text {
+    position: absolute;
+    bottom: 30%;
+    overflow: hidden;
 }

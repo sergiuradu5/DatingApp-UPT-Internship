@@ -3,7 +3,8 @@ import { AuthService } from 'src/app/_services/auth.service';
 import { UserService } from 'src/app/_services/user.service';
 import { AlertifyService } from 'src/app/_services/alertify.service';
 import { Message } from 'src/app/_models/message';
-import { tap } from 'rxjs/operators';
+import { tap, startWith, switchMap } from 'rxjs/operators';
+import { Observable, interval } from 'rxjs';
 
 @Component({
   selector: 'app-member-messages',
@@ -35,8 +36,7 @@ export class MemberMessagesComponent implements OnInit {
           this.userService.markAsRead(currentUserId, messages[i].id);
           }
         }
-      })
-    )
+      }))
     .subscribe(messages => {
       this.messages = messages;
     }, error => {
@@ -50,7 +50,7 @@ export class MemberMessagesComponent implements OnInit {
     this.userService.sendMessage(this.authService.decodedToken.nameid, this.newMessage)
     .subscribe( (message: Message) => {
      this.messages.unshift(message); //Unshift means adding an element at the beginning of the array, not the end (push does that)
-      this.newMessage.content = "";
+     this.newMessage.content = "";
     }, error => {
       this.alertify.error(error);
     });

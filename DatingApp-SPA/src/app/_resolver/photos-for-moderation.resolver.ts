@@ -10,7 +10,7 @@ import { AdminService } from '../_services/admin.service';
 export class PhotosForModerationResolver implements Resolve<Photo[]> {
 
   pageNumber =1 ;
-  pageSize = 5;
+  pageSize = 8;
   constructor(
     private adminService: AdminService,
     private router: Router,

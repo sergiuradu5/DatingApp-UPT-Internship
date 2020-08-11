@@ -70,12 +70,6 @@ createRegisterForm() { //This here is a reactive form built via a FORM BUILDER
         });
       });
     }
-    // this.authService.register(this.model).subscribe( () => {
-    //   console.log('Registration successful');
-    // }, error => {
-    //   this.alertify.error(error);
-    // });
-    console.log(this.registerForm.value);
   }
   cancel()
   {

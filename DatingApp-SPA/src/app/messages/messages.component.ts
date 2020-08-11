@@ -28,16 +28,12 @@ export class MessagesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    /* Non Real Time messages
     this.route.data.subscribe(data => {
       this.messages = data['messages'].result;
       this.pagination = data['messages'].pagination;
       
-    }); */
-    this.messages$ = interval(1000).pipe(
-    startWith(0), switchMap( () => this.userService.getMessages(this.authService.decodedToken.nameid,
-      this.pagination.currentPage,
-      this.pagination.itemsPerPage, this.messageContainer)));
+    }); 
+      
   }
   //Real time messages
   
@@ -50,7 +46,6 @@ export class MessagesComponent implements OnInit {
         .subscribe((res: PaginatedResult<Message[]>) => {
           this.messages = res.result;
           this.pagination = res.pagination;
-          console.log(this.messages);
         }, error => {
           this.alertify.error(error);
         });

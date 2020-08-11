@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/_services/auth.service';
   styleUrls: ['./photo-management.component.css']
 })
 export class PhotoManagementComponent implements OnInit {
-  photos: Photo[];
+  photos: any[];
   photoParams: any = {};
   pagination: Pagination;
   constructor(private adminService: AdminService,
@@ -30,13 +30,12 @@ export class PhotoManagementComponent implements OnInit {
 
   pageChanged(event: any) : void {
     this.pagination.currentPage = event.page;
-    console.log(this.pagination.currentPage);
     this.loadPhotosForModeration();
   }
   loadPhotosForModeration() {
     this.adminService.getPhotosForModeration(this.pagination.currentPage, this.pagination.itemsPerPage, this.photoParams)
-    .subscribe((res: PaginatedResult<Photo[]>) => {
-      console.log(this.photoParams);
+    .subscribe((res: PaginatedResult<any[]>) => {
+
       this.photos = res.result;
       this.pagination = res.pagination;
     }, error => {

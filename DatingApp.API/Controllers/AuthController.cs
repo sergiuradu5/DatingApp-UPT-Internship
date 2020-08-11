@@ -41,7 +41,9 @@ namespace DatingApp.API.Controllers
         {
          
             var userToCreate = _mapper.Map<User>(userForRegisterDTO);
+            
             var result = await _userManager.CreateAsync(userToCreate, userForRegisterDTO.Password);
+            result = await _userManager.AddToRoleAsync(userToCreate, "Member");
             var userToReturn = _mapper.Map<UserForDetailedDTO>(userToCreate);
 
             if(result.Succeeded)

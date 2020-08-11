@@ -24,6 +24,7 @@ import { HasRoleDirective } from './directives/has-role.directive';
 
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// import { NgxNavbarModule, NgxNavbarCollapseComponent } from 'ngx-bootstrap-navbar';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import { NgxGalleryModule } from 'ngx-gallery-9';
@@ -78,6 +79,7 @@ export function tokenGetter() {
       UserManagementComponent,
       PhotoManagementComponent,
       RolesModalComponent
+      
    ],
    imports: [
       BrowserModule,
@@ -85,6 +87,7 @@ export function tokenGetter() {
       FormsModule,
       BrowserAnimationsModule,
       NgxGalleryModule,
+      // NgxNavbarModule,
       ModalModule.forRoot(),
       ButtonsModule.forRoot(),
       PaginationModule.forRoot(),
@@ -97,8 +100,8 @@ export function tokenGetter() {
       JwtModule.forRoot({
             config: {
                tokenGetter: tokenGetter,
-               whitelistedDomains: ['localhost:5000'],
-               blacklistedRoutes: ['localhost:5000/api/auth']
+               allowedDomains: ['localhost:5000'],
+               disallowedRoutes: ['localhost:5000/api/auth']
             }
       })
    ],

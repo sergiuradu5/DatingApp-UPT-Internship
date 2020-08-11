@@ -16,7 +16,6 @@ export class RolesModalComponent implements OnInit {
  
 
   ngOnInit() {
-    console.log(this.user);
   }
 
   updateRoles() {

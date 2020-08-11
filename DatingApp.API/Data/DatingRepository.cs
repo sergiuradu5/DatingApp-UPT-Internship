@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using DatingApp.API.Helpers;
 using DatingApp.API.Models;
+using DatingApp.API.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Data
@@ -43,9 +44,19 @@ namespace DatingApp.API.Data
             return photo;
         }
 
-        public async Task<PagedList<Photo>> GetPhotosForModeration(PhotosForModerationParams photosParams)
+        public async Task<PagedList<PhotoForModerationDTO>> GetPhotosForModeration(PhotosForModerationParams photosParams)
         {
-             var photos = _context.Photos.IgnoreQueryFilters().Where(p => p.IsApproved == false).OrderBy(p => p.DateAdded).AsQueryable();
+             var photos = _context.Photos.Include(u => u.User).IgnoreQueryFilters()
+             .Where(p => p.IsApproved == false).OrderBy(p => p.DateAdded)
+             .Select(u => new PhotoForModerationDTO {
+                 Id = u.Id,
+                 UserName = u.User.UserName,
+                 Url = u.Url,
+                 IsApproved = u.IsApproved,
+                 DateAdded = u.DateAdded,
+                 IsMain = u.IsMain
+             })
+             .AsQueryable();
 
             if(!string.IsNullOrEmpty(photosParams.OrderBy))
             {
@@ -60,7 +71,7 @@ namespace DatingApp.API.Data
                 }
             }
             
-            return await PagedList<Photo>.CreateAsync(photos, photosParams.PageNumber, 
+            return await PagedList<PhotoForModerationDTO>.CreateAsync(photos, photosParams.PageNumber, 
             photosParams.PageSize);
         }
 

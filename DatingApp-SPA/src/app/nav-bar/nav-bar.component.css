@@ -1,8 +1,13 @@
 .dropdown-toggle, .dropdown-item {
     cursor: pointer;
 }
-img {
+img.img-avatar {
     max-height: 50px;
     border: 2px solid white;
+    display: inline;
+}
+
+img.img-logo {
+    max-height: 50px;
     display: inline;
 }

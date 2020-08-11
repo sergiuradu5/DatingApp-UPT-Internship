@@ -9,6 +9,7 @@ import {Router} from '@angular/router';
   styleUrls: ['./nav-bar.component.css']
 })
 export class NavBarComponent implements OnInit {
+  isMenuCollapsed : boolean;
   model: any={};
   photoUrl: string;
   constructor(public authService: AuthService,

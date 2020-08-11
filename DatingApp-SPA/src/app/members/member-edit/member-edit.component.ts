@@ -33,13 +33,12 @@ export class MemberEditComponent implements OnInit {
   ngOnInit() {
     this.route.data.subscribe((data) => {
       this.user = data['user'];
-      console.log(this.user);
+      
     });
     this.authService.currentPhotoUrl.subscribe(photoUrl => this.photoUrl=photoUrl);
   }
 
   updateUser() {
-    console.log(this.user);
     this.userService.updateUser(this.authService.decodedToken.nameid, this.user).subscribe( next => {
       this.alertify.success('Profile updated successfully');
       this.editForm.reset(this.user);

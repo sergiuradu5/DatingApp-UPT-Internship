@@ -42,7 +42,7 @@ namespace DatingApp.API.Controllers {
                 usersParams.Gender = "other";
             }
 
-            var users = await _repo.GetUsers (usersParams);
+            var users = await _repo.GetUsers(usersParams);
             var usersToReturn = _mapper.Map<IEnumerable<UserForListDTO>>(users);
 
             Response.AddPagination(users.CurrentPage, users.PageSize, 

@@ -31,7 +31,7 @@ export class AdminService {
 
     getPhotosForModeration(page?, itemsPerPage?, photosParams?) : Observable<PaginatedResult<Photo[]>>
     {
-      const paginatedResult: PaginatedResult<Photo[]> = new PaginatedResult<Photo[]>();
+      const paginatedResult: PaginatedResult<any[]> = new PaginatedResult<any[]>();
 
       let params = new HttpParams();
 
@@ -44,7 +44,7 @@ export class AdminService {
         params = params.append('orderBy', photosParams.orderBy);
       }
 
-      return this.http.get<Photo[]>(this.baseUrl + 'admin/photosForModeration', {observe: 'response', params})
+      return this.http.get<any[]>(this.baseUrl + 'admin/photosForModeration', {observe: 'response', params})
       .pipe(
         map(response => {
           paginatedResult.result = response.body;
